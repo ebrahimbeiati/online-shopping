@@ -1,79 +1,211 @@
-.header{
-    height: 60px;
+/* Header.css
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #969797;
+  padding: 10px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header__logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #f4f2f2;
+}
+
+.header__logoImage {
+  margin-right: 10px;
+}
+
+.header__logoTitle {
+  font-size: 1.8rem;
+}
+
+.header__search {
+  display: flex;
+  align-items: center;
+  border: 1px solid lightgray;
+  border-radius: 999px;
+  flex: 1;
+  margin: 0 10px;
+  padding: 5px;
+}
+
+.header__searchInput {
+  flex: 1;
+  border: none;
+  outline: none;
+}
+
+.header__searchIcon {
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-radius: 999px;
+}
+
+.header__nav {
+  display: flex;
+  align-items: center;
+}
+
+.header__nav > * {
+  margin-left: 10px;
+}
+
+.nav__item {
+  text-decoration: none;
+  color: #000;
+  cursor: pointer;
+}
+
+.nav__item:hover {
+  text-decoration: underline;
+}
+
+.nav__itemBasket {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.nav__basketCount {
+  background-color: #f0c14b;
+  color: #000;
+  border-radius: 50%;
+  padding: 3px 7px;
+  font-size: 0.8rem;
+  position: absolute;
+  top: -8px;
+  right: -8px;
+} */
+
+.header {
+    height: 60px; 
     display: flex;
     align-items: center;
-    background-color: black;
+    background-color: #131921;
     position: sticky;
     top: 0;
-    z-index:100;
+    z-index: 100;
 }
-.header_logo{
+
+.header__logo {
     display: flex;
     align-items: center;
-    color: darkorange;
+    color: #ff9f00;
     margin: 0 25px;
 }
-.header_logoImage{
-    height: 50px;
+
+.header__logoImage {
     margin-right: 10px;
 }
-.header_title{
-    color: white;
+
+.header__logoTitle {
     text-decoration: none;
     border: 0;
-    font-weight: 500;
+    color: white;
 }
-.header_search{
+
+.header__search {
     display: flex;
     flex: 1;
     align-items: center;
-    border: 1px solid lightgray;
-    height: 30px;
+    border-radius: 24px;
+    margin: 0 10px;
 }
-.header_searchInput{
-    border: none;
-    width: 100%;
+
+.header__searchInput {
     height: 12px;
     padding: 10px;
+    border: none;
+    width: 100%;
 }
-.header_searchIcon{
-    background-color: rgb(219, 129, 73);
+
+.header__searchIcon {
     padding: 5px;
     height: 22px !important;
+    background-color: #ff9f00;
 }
-.search_nav{
+
+/* .header__nav {
     display: flex;
-    align-items: center;
     justify-content: space-evenly;
-    color: white;
-    font-size: 15px;
 }
-  
-.nav_item{
+
+.nav__item {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     margin-left: 10px;
-    margin-right: 10px;
-    flex-direction: column;  
-    padding: 10px;
+    margin-right: 10px;  
+    color: white;
 }
-.nav_itemOne{
+
+.nav__itemLineOne {
     font-size: 10px;
 }
-.nav_itemTwo{
-    font-size: 13px;
-    font-weight: 600;
 
+.nav__itemLineTwo {
+    font-size: 13px;
+    font-weight: 800; 
 }
-.nav_itemBasket{
+
+.nav__itemBasket {
     display: flex;
     align-items: center;
     color: white;
-   height: 50px;
-    margin-right: 10px;
-}
-.nav_basketCount{
+    margin-right: 50px;
     margin-left: 10px;
-    margin-right: 10px;
 }
 
+.nav__basketCount {
+    margin-left: 10px;
+    margin-right: 10px;
+} */
+
+.header__nav {
+  display: flex;
+  align-items: center;
+}
+
+.header__nav > * {
+  margin-left: 10px;
+}
+
+.nav__item {
+  display: flex;
+  text-decoration: none;
+ flex-direction: column;
+ font-size: 13px;
+    font-weight: 800; 
+
+  color: #e5e1e1;
+  cursor: pointer;
+}
+
+.nav__item:hover {
+  text-decoration: underline;
+}
+
+.nav__itemBasket {
+  display: flex;
+  color: white;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.nav__basketCount {
+  background-color: #f0c14b;
+  color: rgb(18, 16, 16);
+  border-radius: 50%;
+  padding: 3px 7px;
+  font-size: 0.8rem;
+  position: absolute;
+  top: -8px;
+  right: -8px;
+} 
