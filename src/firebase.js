@@ -1,6 +1,5 @@
-import firebase from "firebase/compat/app"; // Import the "compat" version
-import "firebase/compat/firestore"; // Import the firestore module
-import "firebase/compat/auth";
+import firebase from "./firebase";
+
 const firebaseConfig = {
   apiKey: "AIzaSyA3WzUrKtcCF_jk5uKEHsN56eeCqgqnbEw",
   authDomain: "online-shopping-dd0ad.firebaseapp.com",
@@ -11,6 +10,7 @@ const firebaseConfig = {
   measurementId: "G-RW0L30P63S",
 };
 
+// const firebaseApp = firebase.initializeApp(firebaseConfig);
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 
 const db = firebaseApp.firestore();
