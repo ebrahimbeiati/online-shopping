@@ -26,7 +26,6 @@ import Home from "./Home";
 import Header from "./Header";
 import Checkout from "./Checkout";
 import { db, auth } from "./firebase";
-
 import Login from "./Login";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
