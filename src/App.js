@@ -64,17 +64,24 @@ import "./App.css";
 import Home from "./Home";
 import Header from "./Header";
 import Checkout from "./Checkout";
-import { db, auth } from "./firebase";
-import Login from "./Login";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Login from "./Login";
+import RegisterPage from "./RegisterPage";
 
 function App() {
   return (
     <div className="App">
       <Router>
         <Routes>
-          <Route path="/login" element={<Login />} />{" "}
-          {/* Wrap Login inside Route */}
+          <Route
+            path="/login"
+            element={
+              <>
+                <Header />
+                <Login />
+              </>
+            }
+          />
           <Route
             path="/checkout"
             element={
@@ -83,8 +90,16 @@ function App() {
                 <Checkout />
               </>
             }
-          />{" "}
-          {/* Wrap Header and Checkout inside a fragment */}
+          />
+          <Route
+            path="/register"
+            element={
+              <>
+                <Header />
+                <RegisterPage />
+              </>
+            }
+          />
           <Route
             path="/"
             element={
@@ -93,8 +108,7 @@ function App() {
                 <Home />
               </>
             }
-          />{" "}
-          {/* Wrap Header and Home inside a fragment */}
+          />
         </Routes>
       </Router>
     </div>
@@ -102,3 +116,28 @@ function App() {
 }
 
 export default App;
+// import "./App.css";
+// import Home from "./Home";
+// import Header from "./Header";
+// import Checkout from "./Checkout";
+// import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+// import Login from "./Login";
+// import RegisterPage from "./RegisterPage";
+
+// function App() {
+//   return (
+//     <div className="App">
+//       <Router>
+//         <Routes>
+//           <Route path="/login" element={<Login />} />
+//           <Route path="/checkout" element={<Checkout />} />
+//           <Route path="/register" element={<RegisterPage />} />
+//           <Route path="/Header" element ={<Header/>}/>
+//           <Route path="/" element={<Home />} />
+//         </Routes>
+//       </Router>
+//     </div>
+//   );
+// }
+
+// export default App;
