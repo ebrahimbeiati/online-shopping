@@ -9,21 +9,24 @@
     "react": "^17.0.2",
     "react-currency-format": "^1.1.0",
     "react-dom": "^17.0.2",
-    "react-router-dom": "^6.14.2",
-    "webpack-cli": "^5.1.4"
+    "react-router-dom": "^6.14.2"
   },
   "name": "online-shopping",
   "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
   "version": "1.0.0",
   "main": "index.js",
   "devDependencies": {
+    "@babel/core": "^7.22.9",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "react-scripts": "^5.0.1"
+    "@babel/preset-react": "^7.22.5",
+    "babel-loader": "^9.1.3",
+    "react-scripts": "latest",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --mode production"
+    "build": "react-scripts build"
   },
   "author": "",
   "license": "ISC",
