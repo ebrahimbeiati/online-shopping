@@ -30,7 +30,11 @@
     border-color: #a88734 #9c7e31 #846a29;
     color: #111;
   }
-  
+  .product > button:hover{
+    background: #e7e4df;
+    cursor: pointer!important
+    
+  }
   
   .product__price {
     margin-top: 5px;
