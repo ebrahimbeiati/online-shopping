@@ -1,19 +1,9 @@
 [build]
   command = "npm run build"
-  publish = "dist"
+  publish = ".next"
 
 [build.environment]
   NODE_VERSION = "18"
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "origin-when-cross-origin"
-    X-XSS-Protection = "1; mode=block"
+
 
