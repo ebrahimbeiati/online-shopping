@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from 'react-hot-toast';
 import { StoreProvider } from '@/components/providers/StoreProvider';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -11,7 +12,16 @@ export const metadata: Metadata = {
   description: 'Shop the latest products with our modern e-commerce platform built with Next.js and Tailwind CSS',
   keywords: 'e-commerce, online shopping, next.js, tailwind css',
   authors: [{ name: 'Online Shopping Team' }],
-  viewport: 'width=device-width, initial-scale=1',
+  viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
+  themeColor: '#8b5cf6',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'ShopHub',
+  },
+  formatDetection: {
+    telephone: false,
+  },
 };
 
 export default function RootLayout({
@@ -23,7 +33,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <StoreProvider>
-          {children}
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
           <Toaster 
             position="top-right"
             toastOptions={{

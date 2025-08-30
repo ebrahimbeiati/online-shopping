@@ -3,8 +3,9 @@
 import Product from './Product';
 import { Product as ProductType } from '@/lib/store';
 import { SparklesIcon, StarIcon, FireIcon, BoltIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import SkeletonLoader from './SkeletonLoader';
 
 const products: ProductType[] = [
   {
@@ -206,6 +207,16 @@ interface HomeProps {
 
 export default function Home({ searchQuery = '' }: HomeProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
+
+  // Debounced search to prevent excessive filtering
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
 
   // Filter products based on search query and selected category
   const filteredProducts = useMemo(() => {
@@ -217,8 +228,8 @@ export default function Home({ searchQuery = '' }: HomeProps) {
     }
     
     // Then filter by search query
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
+    if (debouncedSearchQuery.trim()) {
+      const query = debouncedSearchQuery.toLowerCase();
       filtered = filtered.filter(product => 
         product.title.toLowerCase().includes(query) ||
         product.id.toLowerCase().includes(query) ||
@@ -227,7 +238,7 @@ export default function Home({ searchQuery = '' }: HomeProps) {
     }
     
     return filtered;
-  }, [searchQuery, selectedCategory]);
+  }, [debouncedSearchQuery, selectedCategory]);
 
   const handleCategoryClick = (categoryValue: string) => {
     if (selectedCategory === categoryValue) {
@@ -244,61 +255,40 @@ export default function Home({ searchQuery = '' }: HomeProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-50">
+    <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-pink-600/20 to-blue-600/20"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="text-center">
-            <div className="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-sm rounded-full px-6 py-3 mb-8 border border-white/30">
-              <SparklesIcon className="h-5 w-5 text-purple-400" />
-              <span className="text-purple-800 font-medium">Discover Amazing Deals</span>
-            </div>
-            <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6">
-              Shop the
-              <span className="block bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
-                Future
-              </span>
-            </h1>
-            <p className="text-xl text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed">
-              Experience premium shopping with our curated collection of high-quality products. 
-              From cutting-edge electronics to timeless fashion, find everything you need.
-            </p>
-
-          </div>
+      <div className="bg-white py-8 sm:py-12">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
+            Shop the Future
+          </h1>
+          <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+            Experience premium shopping with our curated collection of high-quality products.
+          </p>
         </div>
       </div>
 
       {/* Categories Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Shop by Category</h2>
-          <p className="text-gray-600">Explore our wide range of product categories</p>
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="text-center mb-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Shop by Category</h2>
+          <p className="text-gray-600">Explore our product categories</p>
         </div>
         
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 gap-3">
           {categories.map((category) => (
             <button
               key={category.name}
               onClick={() => handleCategoryClick(category.value)}
-              className={`group cursor-pointer transition-all duration-300 ${
+              className={`p-4 rounded-lg text-center ${
                 selectedCategory === category.value 
-                  ? 'transform scale-105' 
-                  : 'hover:scale-105'
+                  ? 'ring-2 ring-purple-500' 
+                  : ''
               }`}
             >
-              <div className={`bg-gradient-to-br ${category.color} p-6 rounded-2xl text-center transition-all duration-300 shadow-lg group-hover:shadow-xl ${
-                selectedCategory === category.value 
-                  ? 'ring-4 ring-white/50 shadow-2xl' 
-                  : ''
-              }`}>
-                <category.icon className="h-12 w-12 text-white mx-auto mb-4" />
-                <h3 className="text-white font-semibold text-lg">{category.name}</h3>
-                {selectedCategory === category.value && (
-                  <div className="mt-2">
-                    <span className="text-white/80 text-sm">✓ Selected</span>
-                  </div>
-                )}
+              <div className={`bg-gradient-to-br ${category.color} p-4 rounded-lg`}>
+                <category.icon className="h-8 w-8 text-white mx-auto mb-2" />
+                <h3 className="text-white font-medium text-sm">{category.name}</h3>
               </div>
             </button>
           ))}
@@ -306,13 +296,13 @@ export default function Home({ searchQuery = '' }: HomeProps) {
 
         {/* Clear Filters Button */}
         {(selectedCategory || searchQuery) && (
-          <div className="text-center mt-8">
+          <div className="text-center mt-6 sm:mt-8">
             <button
               onClick={clearFilters}
-              className="inline-flex items-center space-x-2 bg-white/80 backdrop-blur-sm text-gray-700 font-medium py-3 px-6 rounded-2xl hover:bg-white hover:shadow-xl transition-all duration-300 border border-gray-200"
+              className="inline-flex items-center space-x-2 bg-white/80 backdrop-blur-sm text-gray-700 font-medium py-3 px-4 sm:px-6 rounded-2xl hover:bg-white hover:shadow-xl transition-all duration-300 border border-gray-200 active:scale-95 touch-manipulation min-h-[44px]"
             >
-              <span>Clear All Filters</span>
-              <span className="text-sm bg-gray-200 text-gray-600 px-2 py-1 rounded-full">
+              <span className="text-sm sm:text-base">Clear All Filters</span>
+              <span className="text-xs sm:text-sm bg-gray-200 text-gray-600 px-2 py-1 rounded-full">
                 {selectedCategory ? '1' : '0'} category, {searchQuery ? '1' : '0'} search
               </span>
             </button>
@@ -320,22 +310,22 @@ export default function Home({ searchQuery = '' }: HomeProps) {
         )}
       </div>
 
-      {/* Search Results Header */}
-      {(searchQuery || selectedCategory) && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
-            <div className="flex items-center space-x-3 mb-4">
-              <MagnifyingGlassIcon className="h-6 w-6 text-purple-500" />
-              <h3 className="text-xl font-semibold text-gray-900">
-                {searchQuery && selectedCategory 
-                  ? `Search Results for "${searchQuery}" in ${categories.find(c => c.value === selectedCategory)?.name}`
-                  : searchQuery 
-                    ? `Search Results for "${searchQuery}"`
+              {/* Search Results Header */}
+        {(debouncedSearchQuery || selectedCategory) && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-lg border border-white/20">
+            <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
+              <MagnifyingGlassIcon className="h-5 w-5 sm:h-6 sm:w-6 text-purple-500" />
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900">
+                {debouncedSearchQuery && selectedCategory 
+                  ? `Search Results for "${debouncedSearchQuery}" in ${categories.find(c => c.value === selectedCategory)?.name}`
+                  : debouncedSearchQuery 
+                    ? `Search Results for "${debouncedSearchQuery}"`
                     : `Products in ${categories.find(c => c.value === selectedCategory)?.name}`
                 }
               </h3>
             </div>
-            <p className="text-gray-600">
+            <p className="text-sm sm:text-base text-gray-600">
               Found {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''}
             </p>
           </div>
@@ -343,16 +333,16 @@ export default function Home({ searchQuery = '' }: HomeProps) {
       )}
 
       {/* Featured Products */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            {searchQuery || selectedCategory ? 'Filtered Results' : 'Featured Products'}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <div className="text-center mb-8 sm:mb-12">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">
+            {debouncedSearchQuery || selectedCategory ? 'Filtered Results' : 'Featured Products'}
           </h2>
-          <p className="text-gray-600">
-            {searchQuery && selectedCategory 
-              ? `Products matching "${searchQuery}" in ${categories.find(c => c.value === selectedCategory)?.name}`
-              : searchQuery 
-                ? `Products matching "${searchQuery}"`
+          <p className="text-sm sm:text-base text-gray-600 px-4">
+            {debouncedSearchQuery && selectedCategory 
+              ? `Products matching "${debouncedSearchQuery}" in ${categories.find(c => c.value === selectedCategory)?.name}`
+              : debouncedSearchQuery 
+                ? `Products matching "${debouncedSearchQuery}"`
                 : selectedCategory 
                   ? `All products in ${categories.find(c => c.value === selectedCategory)?.name}`
                   : 'Handpicked products just for you'
@@ -361,27 +351,33 @@ export default function Home({ searchQuery = '' }: HomeProps) {
         </div>
         
         {filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {filteredProducts.map((product) => (
               <Product key={product.id} {...product} />
             ))}
           </div>
+        ) : debouncedSearchQuery !== searchQuery ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <SkeletonLoader key={index} type="product" />
+            ))}
+          </div>
         ) : (
-          <div className="text-center py-16">
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-12 shadow-xl border border-white/20 max-w-md mx-auto">
-              <MagnifyingGlassIcon className="h-16 w-16 text-gray-400 mx-auto mb-6" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">No products found</h3>
-              <p className="text-gray-600 mb-6">
-                {searchQuery || selectedCategory 
+          <div className="text-center py-12 sm:py-16">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-12 shadow-xl border border-white/20 max-w-md mx-auto mx-4">
+              <MagnifyingGlassIcon className="h-12 w-12 sm:h-16 sm:w-16 text-gray-400 mx-auto mb-4 sm:mb-6" />
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">No products found</h3>
+              <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
+                {debouncedSearchQuery || selectedCategory 
                   ? 'Try adjusting your search terms or selecting a different category.'
                   : 'Try browsing our categories instead.'
                 }
               </p>
               <button 
                 onClick={clearFilters}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-3 px-6 rounded-2xl hover:from-purple-700 hover:to-pink-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-3 px-4 sm:px-6 rounded-2xl hover:from-purple-700 hover:to-pink-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl active:scale-95 touch-manipulation min-h-[44px]"
               >
-                {searchQuery || selectedCategory ? 'Clear Filters' : 'Browse All Products'}
+                {debouncedSearchQuery || selectedCategory ? 'Clear Filters' : 'Browse All Products'}
               </button>
             </div>
           </div>
@@ -389,10 +385,10 @@ export default function Home({ searchQuery = '' }: HomeProps) {
       </div>
 
       {/* Newsletter Section */}
-      <div className="bg-gradient-to-r from-purple-600 to-pink-600 py-20">
+      <div className="bg-gradient-to-r from-purple-600 to-pink-600 py-12 sm:py-16 md:py-20">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-white mb-4">Stay Updated</h2>
-          <p className="text-purple-100 mb-8 text-lg">Get the latest deals and product updates delivered to your inbox</p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3 sm:mb-4">Stay Updated</h2>
+          <p className="text-purple-100 mb-6 sm:mb-8 text-base sm:text-lg px-4">Get the latest deals and product updates delivered to your inbox</p>
           
           <form onSubmit={(e) => {
             e.preventDefault();
@@ -402,18 +398,18 @@ export default function Home({ searchQuery = '' }: HomeProps) {
               toast.success('Thank you for subscribing! You\'ll receive updates soon.');
               e.currentTarget.email.value = '';
             }
-          }} className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+          }} className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center max-w-md mx-auto px-4">
             <input
               type="email"
               name="email"
               placeholder="Enter your email"
               required
               pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-              className="flex-1 px-6 py-3 rounded-2xl border-0 focus:outline-none focus:ring-2 focus:ring-white/50 text-gray-900"
+              className="flex-1 px-4 sm:px-6 py-3 rounded-2xl border-0 focus:outline-none focus:ring-2 focus:ring-white/50 text-gray-900 text-sm sm:text-base"
             />
             <button 
               type="submit"
-              className="px-8 py-3 bg-white text-purple-600 font-semibold rounded-2xl hover:bg-gray-100 transform hover:scale-105 transition-all duration-300"
+              className="px-6 sm:px-8 py-3 bg-white text-purple-600 font-semibold rounded-2xl hover:bg-gray-100 transform hover:scale-105 transition-all duration-300 text-sm sm:text-base"
             >
               Subscribe
             </button>
@@ -430,10 +426,10 @@ export default function Home({ searchQuery = '' }: HomeProps) {
         onClick={() => {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
-        className="fixed bottom-8 right-8 bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 rounded-full shadow-2xl hover:from-purple-700 hover:to-pink-700 transform hover:scale-110 transition-all duration-300 z-40"
+        className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 bg-gradient-to-r from-purple-600 to-pink-600 text-white p-3 sm:p-4 rounded-full shadow-2xl hover:from-purple-700 hover:to-pink-700 transform hover:scale-110 transition-all duration-300 z-40 active:scale-95 touch-manipulation min-h-[44px] min-w-[44px]"
         aria-label="Back to top"
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
         </svg>
       </button>

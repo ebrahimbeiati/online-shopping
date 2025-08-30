@@ -50,7 +50,8 @@ export default function PaymentForm({ onClose }: PaymentFormProps) {
       
       // Pre-fill email if user is logged in
       if (user?.email) {
-        setFormData(prev => ({ ...prev, email: user.email }));
+        const userEmail = user.email;
+        setFormData(prev => ({ ...prev, email: userEmail }));
       }
     });
 

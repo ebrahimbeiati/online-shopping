@@ -55,9 +55,81 @@ export default function Header({ onSearch, searchQuery = '' }: HeaderProps) {
   };
 
   return (
-    <header className="bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 shadow-2xl border-b border-purple-500/20 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+    <header className="bg-slate-900 shadow-lg border-b border-slate-700 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4">
+        {/* Mobile Layout */}
+        <div className="block sm:hidden">
+          {/* Top Row */}
+          <div className="flex items-center justify-between py-3">
+            <Link href="/" className="flex items-center space-x-2">
+              <BuildingStorefrontIcon className="h-6 w-6 text-purple-400" />
+              <span className="text-base font-bold text-white">ShopHub</span>
+            </Link>
+            
+            <div className="flex items-center space-x-3">
+              <Link href="/wishlist" className="relative p-2">
+                <HeartIcon className="h-5 w-5 text-purple-300" />
+                {getWishlistCount() > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                    {getWishlistCount()}
+                  </span>
+                )}
+              </Link>
+              
+              <Link href="/checkout" className="relative p-2">
+                <ShoppingBagIcon className="h-5 w-5 text-purple-300" />
+                {getItemCount() > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                    {getItemCount()}
+                  </span>
+                )}
+              </Link>
+            </div>
+          </div>
+          
+          {/* Search */}
+          <div className="pb-3">
+            <form onSubmit={handleSearch} className="relative">
+              <input
+                type="text"
+                value={localSearchQuery}
+                onChange={handleInputChange}
+                placeholder="Search..."
+                className="w-full pl-3 pr-10 py-2 bg-white/10 rounded border border-white/20 text-white placeholder-gray-300 focus:outline-none"
+              />
+              <button type="submit" className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 text-gray-300">
+                <MagnifyingGlassIcon className="h-4 w-4" />
+              </button>
+            </form>
+          </div>
+          
+          {/* Auth */}
+          <div className="flex items-center justify-center space-x-4 pb-3">
+            {!isLoading && (
+              <>
+                {currentUser ? (
+                  <div className="flex items-center space-x-3">
+                    <UserIcon className="h-4 w-4 text-purple-300" />
+                    <span className="text-sm text-white">
+                      {currentUser.displayName || currentUser.email?.split('@')[0]}
+                    </span>
+                    <button onClick={handleSignOut} className="text-sm text-purple-300">
+                      Sign Out
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <Link href="/login" className="text-sm text-purple-300">Sign In</Link>
+                    <Link href="/register" className="bg-purple-500 text-white px-3 py-1 rounded text-sm">Register</Link>
+                  </>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Desktop Layout */}
+        <div className="hidden sm:flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3 group">
             <div className="relative">
@@ -127,7 +199,7 @@ export default function Header({ onSearch, searchQuery = '' }: HeaderProps) {
                       className="flex items-center space-x-2 text-purple-200 hover:text-white transition-colors duration-200 group"
                     >
                       <div className="p-2 rounded-xl group-hover:bg-white/10 transition-all duration-200">
-                        <span className="text-sm font-medium">Sign Out</span>
+                        <span className="text-sm font-medium hidden sm:block">Sign Out</span>
                       </div>
                     </button>
                   </div>

@@ -1,9 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCartStore } from '@/lib/store';
 import { ShoppingBagIcon, CreditCardIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 import PaymentForm from './PaymentForm';
+import { auth } from '@/lib/firebase';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import toast from 'react-hot-toast';
 
 // Modern currency formatter
 const formatCurrency = (amount: number): string => {
@@ -18,8 +21,21 @@ const formatCurrency = (amount: number): string => {
 export default function Subtotal() {
   const { items, getTotal, getItemCount } = useCartStore();
   const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const handleProceedToCheckout = () => {
+    if (!currentUser) {
+      toast.error('You must be logged in to proceed to checkout');
+      return;
+    }
     setShowPaymentForm(true);
   };
 
@@ -69,11 +85,15 @@ export default function Subtotal() {
         {/* Checkout Button */}
         <button
           onClick={handleProceedToCheckout}
-          disabled={getItemCount() === 0}
-          className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-4 px-6 rounded-2xl hover:from-purple-700 hover:to-pink-700 transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl flex items-center justify-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-lg mb-6"
+          disabled={getItemCount() === 0 || !currentUser}
+          className={`w-full font-semibold py-4 px-6 rounded-2xl transform transition-all duration-300 shadow-xl flex items-center justify-center space-x-3 mb-6 ${
+            currentUser 
+              ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 hover:scale-105 hover:shadow-2xl text-white' 
+              : 'bg-gray-400 cursor-not-allowed text-gray-600'
+          } disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-lg`}
         >
           <ShoppingBagIcon className="h-6 w-6" />
-          <span>Proceed to Checkout</span>
+          <span>{currentUser ? 'Proceed to Checkout' : 'Login Required'}</span>
         </button>
 
         {/* Security Badge */}
@@ -81,6 +101,15 @@ export default function Subtotal() {
           <ShieldCheckIcon className="h-4 w-4 text-green-500" />
           <span>Secure Checkout</span>
         </div>
+
+        {/* Authentication Notice */}
+        {!currentUser && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-4">
+            <p className="text-sm text-yellow-800 text-center">
+              Please <a href="/login" className="font-semibold underline hover:text-yellow-900">sign in</a> to proceed with checkout
+            </p>
+          </div>
+        )}
 
         {/* Additional Info */}
         <div className="text-center">

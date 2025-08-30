@@ -3,23 +3,31 @@
 import { StarIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { useCartStore, Product as ProductType } from '@/lib/store';
 import toast from 'react-hot-toast';
+import { useEffect, useState } from 'react';
+import { auth } from '@/lib/firebase';
+import { onAuthStateChanged, User } from 'firebase/auth';
 
 interface CheckoutProductProps extends ProductType {}
 
 export default function CheckoutProduct({ id, image, title, price, rating }: CheckoutProductProps) {
   const { removeItem, items } = useCartStore();
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const handleRemove = () => {
-    console.log('Removing item with ID:', id);
-    console.log('Current cart items before removal:', items);
+    if (!currentUser) {
+      toast.error('You must be logged in to remove items');
+      return;
+    }
     
     removeItem(id);
-    
-    // Log after removal for debugging
-    setTimeout(() => {
-      console.log('Cart items after removal:', useCartStore.getState().items);
-    }, 100);
-    
     toast.success('Product removed from cart');
   };
 

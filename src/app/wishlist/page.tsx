@@ -2,25 +2,53 @@
 
 import { useCartStore } from '@/lib/store';
 import Header from '@/components/Header';
-import { HeartIcon, TrashIcon, ShoppingBagIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { HeartIcon, TrashIcon, ShoppingBagIcon, ArrowLeftIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { auth } from '@/lib/firebase';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
 
 export default function WishlistPage() {
   const { wishlist, removeFromWishlist, addItem, getWishlistCount } = useCartStore();
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+      setIsLoading(false);
+      
+      // Redirect to login if not authenticated
+      if (!user) {
+        router.push('/login');
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
   };
 
   const handleRemoveFromWishlist = (id: string) => {
+    if (!currentUser) {
+      toast.error('You must be logged in to manage your wishlist');
+      return;
+    }
     removeFromWishlist(id);
     toast.success('Removed from wishlist');
   };
 
   const handleAddToCart = (item: any) => {
+    if (!currentUser) {
+      toast.error('You must be logged in to add items to cart');
+      return;
+    }
     addItem(item);
     toast.success('Added to cart!');
   };
@@ -29,6 +57,23 @@ export default function WishlistPage() {
     item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     item.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Show loading while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-50 flex items-center justify-center">
+        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+          <p className="text-gray-600 mt-4 text-center">Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render wishlist if not authenticated (will redirect)
+  if (!currentUser) {
+    return null;
+  }
 
   if (getWishlistCount() === 0) {
     return (

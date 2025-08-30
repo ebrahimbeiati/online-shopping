@@ -31,29 +31,18 @@ export const useCartStore = create<CartStore>()(
       wishlist: [],
       
       addItem: (item: Product) => {
-        console.log('Adding item to cart:', item);
-        set((state) => {
-          const newItems = [...state.items, item];
-          console.log('New cart state:', newItems);
-          return { items: newItems };
-        });
+        set((state) => ({
+          items: [...state.items, item]
+        }));
       },
       
       removeItem: (id: string) => {
-        console.log('Removing item with ID:', id);
-        set((state) => {
-          const currentItems = state.items;
-          console.log('Current items before removal:', currentItems);
-          
-          const filteredItems = currentItems.filter((item) => item.id !== id);
-          console.log('Items after filtering:', filteredItems);
-          
-          return { items: filteredItems };
-        });
+        set((state) => ({
+          items: state.items.filter((item) => item.id !== id)
+        }));
       },
       
       clearCart: () => {
-        console.log('Clearing entire cart');
         set({ items: [] });
       },
       
